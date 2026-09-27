@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { locales, isLocale, defaultLocale } from "@/lib/dictionaries";
 
+// Pages under this layout read live data from the database, so render them per request instead of at build time.
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
