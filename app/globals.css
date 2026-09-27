@@ -6,3 +6,15 @@ html,
 body {
   height: 100%;
 }
+
+@layer components {
+  /* Dark navy-to-blue gradient panel — for stat blocks / callouts, matching the poster style */
+  .panel-brand {
+    @apply bg-brand-gradient text-white;
+  }
+
+  /* Circular gradient icon badge — matches the "5+ YEARS" / "EXPERT TEACHERS" icon treatment */
+  .badge-brand {
+    @apply inline-flex items-center justify-center rounded-full bg-brand-gradient text-white;
+  }
+}
