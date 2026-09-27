@@ -1,0 +1,99 @@
+{
+  "common": {
+    "appName": "MSA — Make Studying Amazing",
+    "parentBrand": "AS HUB",
+    "login": "Log in",
+    "logout": "Log out",
+    "enrollNow": "Enroll Now",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "students": "Students",
+    "tasks": "Today's Tasks",
+    "attendance": "Attendance",
+    "scan": "Scan (Kiosk)",
+    "registrations": "Registration Requests"
+  },
+  "landing": {
+    "heroTitle": "Make Studying Amazing",
+    "heroSubtitle": "One place for your child's daily progress, attendance, and grades.",
+    "announcementsTitle": "What's happening at MSA",
+    "ctaRegister": "Enroll your child"
+  },
+  "login": {
+    "title": "Log in to MSA",
+    "error": "Incorrect email or password."
+  },
+  "register": {
+    "title": "Online Registration",
+    "studentName": "Student name",
+    "dateOfBirth": "Date of birth",
+    "school": "Current school",
+    "grade": "Grade",
+    "subjects": "Subjects needed (comma separated)",
+    "parentName": "Parent / guardian name",
+    "parentPhone": "Parent phone",
+    "parentEmail": "Parent email (optional)",
+    "preferredTimes": "Preferred times",
+    "success": "Thanks! Your request has been sent to MSA — we'll be in touch shortly."
+  },
+  "dashboard": {
+    "greetingParent": "Good to see you, {name}",
+    "greetingStaff": "Welcome back, {name}",
+    "childAtCenter": "is currently at MSA",
+    "childNotAtCenter": "is not at MSA right now",
+    "todaysTasks": "Today's Tasks",
+    "attendanceThisMonth": "Attendance this month",
+    "latestNote": "Latest teacher note",
+    "ownerToday": "MSA Today",
+    "totalStudents": "Total students",
+    "presentToday": "Present today",
+    "tasksAssignedVsCompleted": "Tasks assigned / completed",
+    "pendingRegistrations": "Pending registration requests"
+  },
+  "tasks": {
+    "title": "Today's Tasks",
+    "status": {
+      "NOT_STARTED": "Not Started",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed",
+      "NEEDS_REVIEW": "Needs Review",
+      "COULD_NOT_COMPLETE": "Could Not Complete"
+    },
+    "understanding": {
+      "EXCELLENT": "Excellent",
+      "GOOD": "Good",
+      "NEEDS_SUPPORT": "Needs Support"
+    },
+    "note": "Teacher note",
+    "noTasks": "No tasks assigned yet today."
+  },
+  "attendance": {
+    "checkedIn": "Checked In",
+    "checkedOut": "Checked Out",
+    "scanPrompt": "Scan a student or teacher QR code",
+    "duration": "Duration",
+    "openSessions": "Currently checked in"
+  },
+  "journey": {
+    "title": "Today's Journey",
+    "checkedIn": "Checked In",
+    "checkedOut": "Checked Out",
+    "tasksCompletedToday": "{completed}/{total} Tasks Completed Today"
+  },
+  "registrations": {
+    "title": "Registration Requests",
+    "accept": "Accept",
+    "reject": "Reject",
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "noRequests": "No pending requests."
+  }
+}

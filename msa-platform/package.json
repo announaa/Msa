@@ -1,0 +1,42 @@
+{
+  "name": "msa-platform",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "next": "14.2.35",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@prisma/client": "5.18.0",
+    "bcryptjs": "2.4.3",
+    "jose": "5.6.3",
+    "qrcode": "1.5.3",
+    "zod": "3.23.8",
+    "nodemailer": "6.9.14"
+  },
+  "devDependencies": {
+    "typescript": "5.5.4",
+    "@types/node": "20.14.15",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "@types/bcryptjs": "2.4.6",
+    "@types/qrcode": "1.5.5",
+    "@types/nodemailer": "6.4.15",
+    "tailwindcss": "3.4.9",
+    "postcss": "8.4.41",
+    "autoprefixer": "10.4.20",
+    "prisma": "5.18.0",
+    "tsx": "4.16.5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}

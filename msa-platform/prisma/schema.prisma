@@ -1,0 +1,243 @@
+// MSA Platform — Phase 1 schema.
+// Only the entities needed for Phase 1 (auth/RBAC, students, daily tasks,
+// QR attendance, parent dashboard, Today's Journey, public registration).
+// Finance, Staff, Analytics, Tickets, Messaging, Badges, Notifications and
+// Scheduling are Phase 2/3 and are intentionally left out for now — add
+// them as new models rather than overloading these.
+//
+// `programType` on Student/Teacher/Subject exists so the future ASA
+// (sports) system can reuse this schema: Student -> Player, Teacher ->
+// Coach, Subject -> a training discipline, all under the same tables.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  TEACHER
+  PARENT
+  STUDENT
+}
+
+enum ProgramType {
+  EDUCATION
+  SPORTS
+}
+
+enum AccountStatus {
+  ACTIVE
+  PAYMENT_DUE
+  OVERDUE
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  NEEDS_REVIEW
+  COULD_NOT_COMPLETE
+}
+
+enum Understanding {
+  EXCELLENT
+  GOOD
+  NEEDS_SUPPORT
+}
+
+enum RegistrationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role
+  fullName     String
+  locale       String   @default("ar")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  teacherProfile Teacher?
+  parentProfile  ParentGuardian?
+  studentAccount Student? @relation("StudentUser")
+  auditLogs      AuditLog[]
+
+  @@map("users")
+}
+
+model Teacher {
+  id          String      @id @default(cuid())
+  userId      String      @unique
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qrToken     String      @unique @default(cuid())
+  programType ProgramType @default(EDUCATION)
+
+  subjects          Subject[]          @relation("TeacherSubjects")
+  taskAssignments   Task[]             @relation("TeacherTasks")
+  attendanceRecords AttendanceRecord[] @relation("TeacherAttendance")
+
+  @@map("teachers")
+}
+
+model ParentGuardian {
+  id     String  @id @default(cuid())
+  userId String  @unique
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone  String?
+
+  students Student[] @relation("StudentParents")
+
+  @@map("parent_guardians")
+}
+
+model Student {
+  id               String        @id @default(cuid())
+  msaId            String        @unique
+  fullName         String
+  photoUrl         String?
+  dateOfBirth      DateTime
+  grade            String
+  school           String?
+  studentPhone     String?
+  fatherPhone      String?
+  motherPhone      String?
+  emergencyPhone   String?
+  address          String?
+  registrationDate DateTime      @default(now())
+  accountStatus    AccountStatus @default(ACTIVE)
+  programType      ProgramType   @default(EDUCATION)
+  qrToken          String        @unique @default(cuid())
+
+  userId String? @unique
+  user   User?   @relation("StudentUser", fields: [userId], references: [id])
+
+  parents           ParentGuardian[]     @relation("StudentParents")
+  subjects           Subject[]           @relation("StudentSubjects")
+  tasks              Task[]
+  attendanceRecords  AttendanceRecord[]  @relation("StudentAttendance")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("students")
+}
+
+model Subject {
+  id          String      @id @default(cuid())
+  name        String
+  programType ProgramType @default(EDUCATION)
+
+  teachers Teacher[] @relation("TeacherSubjects")
+  students Student[] @relation("StudentSubjects")
+  tasks    Task[]
+
+  @@map("subjects")
+}
+
+model Task {
+  id            String         @id @default(cuid())
+  studentId     String
+  student       Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId     String
+  subject       Subject        @relation(fields: [subjectId], references: [id])
+  teacherId     String
+  teacher       Teacher        @relation("TeacherTasks", fields: [teacherId], references: [id])
+  description   String
+  status        TaskStatus     @default(NOT_STARTED)
+  understanding Understanding?
+  note          String?
+  assignedDate  DateTime       @default(now())
+  completedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  statusEvents TaskStatusEvent[]
+
+  @@index([studentId, assignedDate])
+  @@map("tasks")
+}
+
+// One row per status change. This is what lets Today's Journey show
+// "3:20 PM — Mathematics Started" / "3:55 PM — Mathematics Completed"
+// with real timestamps instead of just the task's current status.
+model TaskStatusEvent {
+  id        String     @id @default(cuid())
+  taskId    String
+  task      Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  status    TaskStatus
+  createdAt DateTime   @default(now())
+
+  @@index([taskId, createdAt])
+  @@map("task_status_events")
+}
+
+// A row is opened on check-in (checkOutAt = null) and closed on the next
+// scan of the same QR token. Exactly one of studentId/teacherId is set.
+model AttendanceRecord {
+  id         String    @id @default(cuid())
+  studentId  String?
+  student    Student?  @relation("StudentAttendance", fields: [studentId], references: [id])
+  teacherId  String?
+  teacher    Teacher?  @relation("TeacherAttendance", fields: [teacherId], references: [id])
+  checkInAt  DateTime  @default(now())
+  checkOutAt DateTime?
+
+  @@index([studentId, checkOutAt])
+  @@index([teacherId, checkOutAt])
+  @@map("attendance_records")
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("announcements")
+}
+
+model RegistrationRequest {
+  id                String             @id @default(cuid())
+  studentName       String
+  dateOfBirth       DateTime?
+  school            String?
+  grade             String
+  requestedSubjects String[]
+  parentName        String
+  parentPhone       String
+  parentEmail       String?
+  preferredTimes    String?
+  status            RegistrationStatus @default(PENDING)
+  createdStudentId  String?
+  createdParentId   String?
+  createdAt         DateTime           @default(now())
+  decidedAt         DateTime?
+
+  @@map("registration_requests")
+}
+
+// Append-only. Every sensitive action (login, registration decisions,
+// task completion, attendance scans, ...) writes one row here.
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id])
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("audit_logs")
+}

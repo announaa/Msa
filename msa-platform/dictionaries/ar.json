@@ -1,0 +1,99 @@
+{
+  "common": {
+    "appName": "إم إس إيه — اجعل الدراسة رائعة",
+    "parentBrand": "إيه إس هَب",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "enrollNow": "سجّل الآن",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "back": "رجوع"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "students": "الطلاب",
+    "tasks": "مهام اليوم",
+    "attendance": "الحضور",
+    "scan": "مسح (جهاز الاستقبال)",
+    "registrations": "طلبات التسجيل"
+  },
+  "landing": {
+    "heroTitle": "اجعل الدراسة رائعة",
+    "heroSubtitle": "مكان واحد لمتابعة تقدّم طفلك اليومي وحضوره وعلاماته.",
+    "announcementsTitle": "آخر أخبار إم إس إيه",
+    "ctaRegister": "سجّل طفلك"
+  },
+  "login": {
+    "title": "تسجيل الدخول إلى إم إس إيه",
+    "error": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+  },
+  "register": {
+    "title": "التسجيل عبر الإنترنت",
+    "studentName": "اسم الطالب",
+    "dateOfBirth": "تاريخ الميلاد",
+    "school": "المدرسة الحالية",
+    "grade": "الصف",
+    "subjects": "المواد المطلوبة (مفصولة بفاصلة)",
+    "parentName": "اسم ولي الأمر",
+    "parentPhone": "هاتف ولي الأمر",
+    "parentEmail": "بريد ولي الأمر (اختياري)",
+    "preferredTimes": "الأوقات المفضّلة",
+    "success": "شكرًا لك! تم إرسال طلبك إلى إم إس إيه، سنتواصل معك قريبًا."
+  },
+  "dashboard": {
+    "greetingParent": "أهلاً بك، {name}",
+    "greetingStaff": "مرحبًا بعودتك، {name}",
+    "childAtCenter": "متواجد الآن في إم إس إيه",
+    "childNotAtCenter": "غير متواجد حاليًا في إم إس إيه",
+    "todaysTasks": "مهام اليوم",
+    "attendanceThisMonth": "الحضور هذا الشهر",
+    "latestNote": "آخر ملاحظة من المعلم",
+    "ownerToday": "إم إس إيه اليوم",
+    "totalStudents": "إجمالي الطلاب",
+    "presentToday": "الحاضرون اليوم",
+    "tasksAssignedVsCompleted": "المهام الموكلة / المنجزة",
+    "pendingRegistrations": "طلبات تسجيل قيد الانتظار"
+  },
+  "tasks": {
+    "title": "مهام اليوم",
+    "status": {
+      "NOT_STARTED": "لم تبدأ",
+      "IN_PROGRESS": "قيد التنفيذ",
+      "COMPLETED": "مكتملة",
+      "NEEDS_REVIEW": "تحتاج مراجعة",
+      "COULD_NOT_COMPLETE": "تعذّر إكمالها"
+    },
+    "understanding": {
+      "EXCELLENT": "ممتاز",
+      "GOOD": "جيد",
+      "NEEDS_SUPPORT": "يحتاج دعمًا"
+    },
+    "note": "ملاحظة المعلم",
+    "noTasks": "لم تُسند أي مهام اليوم بعد."
+  },
+  "attendance": {
+    "checkedIn": "تم تسجيل الحضور",
+    "checkedOut": "تم تسجيل الانصراف",
+    "scanPrompt": "امسح رمز QR الخاص بالطالب أو المعلم",
+    "duration": "المدة",
+    "openSessions": "المتواجدون حاليًا"
+  },
+  "journey": {
+    "title": "رحلة اليوم",
+    "checkedIn": "تسجيل حضور",
+    "checkedOut": "تسجيل انصراف",
+    "tasksCompletedToday": "{completed}/{total} مهام مكتملة اليوم"
+  },
+  "registrations": {
+    "title": "طلبات التسجيل",
+    "accept": "قبول",
+    "reject": "رفض",
+    "pending": "قيد الانتظار",
+    "accepted": "مقبول",
+    "rejected": "مرفوض",
+    "noRequests": "لا توجد طلبات قيد الانتظار."
+  }
+}
