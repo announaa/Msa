@@ -13,6 +13,7 @@ export const MODULE_ACCESS = {
   "attendance-scan": ["OWNER", "MANAGER"],
   journey: ["OWNER", "MANAGER", "TEACHER", "PARENT", "STUDENT"],
   registrations: ["OWNER", "MANAGER"],
+  finance: ["OWNER", "MANAGER", "PARENT"],
 } satisfies Record<string, Role[]>;
 
 export type ModuleKey = keyof typeof MODULE_ACCESS;
@@ -33,5 +34,11 @@ export function canDecideRegistrations(role: Role): boolean {
 }
 
 export function canOperateKiosk(role: Role): boolean {
+  return role === "OWNER" || role === "MANAGER";
+}
+
+// Recording invoices/payments — Parent has read-only access to `finance`
+// (their own student's records) via MODULE_ACCESS above, but never this.
+export function canManageFinance(role: Role): boolean {
   return role === "OWNER" || role === "MANAGER";
 }

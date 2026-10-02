@@ -163,6 +163,47 @@ async function main() {
   await db.attendanceRecord.create({ data: { studentId: student1.id } }); // still checked in
   await db.attendanceRecord.create({ data: { teacherId: teacher1.id } });
 
+  // Finance demo data: student1 is paid up, student2 has an overdue invoice.
+  await db.student.update({ where: { id: student1.id }, data: { monthlyFeeCents: 25000 } });
+  await db.student.update({ where: { id: student2.id }, data: { monthlyFeeCents: 20000 } });
+
+  const paidInvoice = await db.invoice.create({
+    data: {
+      studentId: student1.id,
+      periodLabel: "September 2026",
+      amountCents: 25000,
+      dueDate: new Date("2026-09-05"),
+      status: "PAID",
+    },
+  });
+  await db.payment.create({
+    data: {
+      studentId: student1.id,
+      invoiceId: paidInvoice.id,
+      amountCents: 25000,
+      method: "E_TRANSFER",
+      paidAt: new Date("2026-09-03"),
+      recordedById: manager.id,
+    },
+  });
+
+  await db.invoice.create({
+    data: {
+      studentId: student2.id,
+      periodLabel: "September 2026",
+      amountCents: 20000,
+      dueDate: new Date("2026-09-05"), // left unpaid, on purpose, as a demo case
+    },
+  });
+
+  // Set directly rather than importing lib/finance.ts's recomputeStudentFinance
+  // here (that module uses the Next.js "@/" path alias, which this standalone
+  // tsx script doesn't resolve) — these match exactly what that function would
+  // compute: student1 fully paid -> ACTIVE; student2's Sept invoice is unpaid
+  // and more than 7 days past its due date -> OVERDUE.
+  await db.student.update({ where: { id: student1.id }, data: { accountStatus: "ACTIVE" } });
+  await db.student.update({ where: { id: student2.id }, data: { accountStatus: "OVERDUE" } });
+
   await db.announcement.create({
     data: {
       title: "Fall term registration is open",

@@ -18,7 +18,8 @@
     "tasks": "مهام اليوم",
     "attendance": "الحضور",
     "scan": "مسح (جهاز الاستقبال)",
-    "registrations": "طلبات التسجيل"
+    "registrations": "طلبات التسجيل",
+    "finance": "الشؤون المالية"
   },
   "landing": {
     "heroTitle": "اجعل الدراسة رائعة",
@@ -55,7 +56,9 @@
     "totalStudents": "إجمالي الطلاب",
     "presentToday": "الحاضرون اليوم",
     "tasksAssignedVsCompleted": "المهام الموكلة / المنجزة",
-    "pendingRegistrations": "طلبات تسجيل قيد الانتظار"
+    "pendingRegistrations": "طلبات تسجيل قيد الانتظار",
+    "outstandingTotal": "الرصيد المستحق (جميع الطلاب)",
+    "overdueAccounts": "حسابات متأخرة السداد"
   },
   "tasks": {
     "title": "مهام اليوم",
@@ -95,5 +98,36 @@
     "accepted": "مقبول",
     "rejected": "مرفوض",
     "noRequests": "لا توجد طلبات قيد الانتظار."
+  },
+  "finance": {
+    "title": "الشؤون المالية",
+    "accountStatus": {
+      "ACTIVE": "نشط",
+      "PAYMENT_DUE": "دفعة مستحقة",
+      "OVERDUE": "متأخر السداد"
+    },
+    "invoiceStatus": {
+      "UNPAID": "غير مدفوعة",
+      "PARTIAL": "مدفوعة جزئيًا",
+      "PAID": "مدفوعة"
+    },
+    "method": {
+      "CASH": "نقدًا",
+      "E_TRANSFER": "تحويل إلكتروني",
+      "CARD": "بطاقة",
+      "OTHER": "أخرى"
+    },
+    "newInvoice": "فاتورة جديدة",
+    "recordPayment": "تسجيل دفعة",
+    "period": "الفترة (مثال: أكتوبر 2026)",
+    "amount": "المبلغ (دولار كندي)",
+    "dueDate": "تاريخ الاستحقاق",
+    "invoice": "الفاتورة",
+    "generalPayment": "دفعة عامة (بدون فاتورة)",
+    "downloadReceipt": "تحميل الإيصال",
+    "noInvoices": "لا توجد فواتير بعد.",
+    "noPayments": "لم تُسجَّل أي دفعات بعد.",
+    "monthlyFee": "الرسوم الشهرية (دولار كندي)",
+    "outstandingBalance": "الرصيد المستحق"
   }
 }

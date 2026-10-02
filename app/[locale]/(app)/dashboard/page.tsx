@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { getDictionary, format, type Locale } from "@/lib/dictionaries";
 import { db } from "@/lib/db";
+import { formatCents } from "@/lib/finance";
 
 function startOfToday() {
   const d = new Date();
@@ -23,13 +24,21 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
   const today = startOfToday();
 
   if (session.role === "OWNER" || session.role === "MANAGER") {
-    const [totalStudents, presentToday, tasksToday, completedToday, pendingRegistrations] = await Promise.all([
-      db.student.count(),
-      db.attendanceRecord.count({ where: { studentId: { not: null }, checkOutAt: null } }),
-      db.task.count({ where: { assignedDate: { gte: today } } }),
-      db.task.count({ where: { assignedDate: { gte: today }, status: "COMPLETED" } }),
-      db.registrationRequest.count({ where: { status: "PENDING" } }),
-    ]);
+    const [totalStudents, presentToday, tasksToday, completedToday, pendingRegistrations, overdueAccounts, unpaidInvoices] =
+      await Promise.all([
+        db.student.count(),
+        db.attendanceRecord.count({ where: { studentId: { not: null }, checkOutAt: null } }),
+        db.task.count({ where: { assignedDate: { gte: today } } }),
+        db.task.count({ where: { assignedDate: { gte: today }, status: "COMPLETED" } }),
+        db.registrationRequest.count({ where: { status: "PENDING" } }),
+        db.student.count({ where: { accountStatus: "OVERDUE" } }),
+        db.invoice.findMany({ where: { status: { not: "PAID" } }, include: { payments: true } }),
+      ]);
+
+    const outstandingCents = unpaidInvoices.reduce((sum, inv) => {
+      const paid = inv.payments.reduce((p, x) => p + x.amountCents, 0);
+      return sum + Math.max(0, inv.amountCents - paid);
+    }, 0);
 
     return (
       <div>
@@ -39,6 +48,8 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
           <StatCard label={dict.dashboard.presentToday} value={presentToday} />
           <StatCard label={dict.dashboard.tasksAssignedVsCompleted} value={`${completedToday}/${tasksToday}`} />
           <StatCard label={dict.dashboard.pendingRegistrations} value={pendingRegistrations} />
+          <StatCard label={dict.dashboard.outstandingTotal} value={formatCents(outstandingCents, params.locale)} />
+          <StatCard label={dict.dashboard.overdueAccounts} value={overdueAccounts} />
         </div>
       </div>
     );
@@ -52,6 +63,7 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
           include: {
             tasks: { where: { assignedDate: { gte: today } }, orderBy: { updatedAt: "desc" } },
             attendanceRecords: { orderBy: { checkInAt: "desc" }, take: 1 },
+            invoices: { where: { status: { not: "PAID" } }, include: { payments: true } },
           },
         },
       },
@@ -67,6 +79,10 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
           const atCenter = !!openRecord && !openRecord.checkOutAt;
           const completed = student.tasks.filter((t) => t.status === "COMPLETED").length;
           const latestNote = student.tasks.find((t) => t.note)?.note;
+          const outstandingCents = student.invoices.reduce((sum, inv) => {
+            const paid = inv.payments.reduce((p, x) => p + x.amountCents, 0);
+            return sum + Math.max(0, inv.amountCents - paid);
+          }, 0);
 
           return (
             <div key={student.id} className="rounded-xl border bg-white p-5 shadow-sm">
@@ -82,6 +98,17 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
               {latestNote && (
                 <p className="mt-3 text-sm text-slate-600">
                   <span className="font-medium">{dict.dashboard.latestNote}:</span> {latestNote}
+                </p>
+              )}
+              {outstandingCents > 0 && (
+                <p className="mt-3 text-sm">
+                  <span className="font-medium text-amber-700">
+                    {dict.finance.outstandingBalance}: {formatCents(outstandingCents, params.locale)}
+                  </span>{" "}
+                  ·{" "}
+                  <a href={`/${params.locale}/finance/${student.id}`} className="text-brand-600 hover:underline">
+                    {dict.finance.title}
+                  </a>
                 </p>
               )}
             </div>

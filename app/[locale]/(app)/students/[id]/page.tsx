@@ -1,8 +1,10 @@
 import QRCode from "qrcode";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getDictionary, type Locale } from "@/lib/dictionaries";
+import { canAccessModule } from "@/lib/rbac";
 
 async function canViewStudent(role: string, userId: string, studentId: string) {
   if (role === "OWNER" || role === "MANAGER") return true;
@@ -53,8 +55,18 @@ export default async function StudentProfilePage({
           </p>
           <p className="mt-1 text-sm text-slate-500">{student.dateOfBirth.toLocaleDateString(params.locale)}</p>
           <p className="mt-2 inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium">
-            {student.accountStatus}
+            {dict.finance.accountStatus[student.accountStatus]}
           </p>
+          {canAccessModule(session.role, "finance") && (
+            <p className="mt-2">
+              <Link
+                href={`/${params.locale}/finance/${student.id}`}
+                className="text-sm font-medium text-brand-600 hover:underline"
+              >
+                {dict.finance.title} →
+              </Link>
+            </p>
+          )}
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={qrDataUrl} alt="Student QR code" className="h-32 w-32" />

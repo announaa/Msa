@@ -18,7 +18,8 @@
     "tasks": "Today's Tasks",
     "attendance": "Attendance",
     "scan": "Scan (Kiosk)",
-    "registrations": "Registration Requests"
+    "registrations": "Registration Requests",
+    "finance": "Finance"
   },
   "landing": {
     "heroTitle": "Make Studying Amazing",
@@ -55,7 +56,9 @@
     "totalStudents": "Total students",
     "presentToday": "Present today",
     "tasksAssignedVsCompleted": "Tasks assigned / completed",
-    "pendingRegistrations": "Pending registration requests"
+    "pendingRegistrations": "Pending registration requests",
+    "outstandingTotal": "Outstanding balance (all students)",
+    "overdueAccounts": "Overdue accounts"
   },
   "tasks": {
     "title": "Today's Tasks",
@@ -95,5 +98,36 @@
     "accepted": "Accepted",
     "rejected": "Rejected",
     "noRequests": "No pending requests."
+  },
+  "finance": {
+    "title": "Finance",
+    "accountStatus": {
+      "ACTIVE": "Active",
+      "PAYMENT_DUE": "Payment Due",
+      "OVERDUE": "Overdue"
+    },
+    "invoiceStatus": {
+      "UNPAID": "Unpaid",
+      "PARTIAL": "Partially Paid",
+      "PAID": "Paid"
+    },
+    "method": {
+      "CASH": "Cash",
+      "E_TRANSFER": "e-Transfer",
+      "CARD": "Card",
+      "OTHER": "Other"
+    },
+    "newInvoice": "New invoice",
+    "recordPayment": "Record payment",
+    "period": "Period (e.g. October 2026)",
+    "amount": "Amount (CAD)",
+    "dueDate": "Due date",
+    "invoice": "Invoice",
+    "generalPayment": "General payment (no invoice)",
+    "downloadReceipt": "Download receipt",
+    "noInvoices": "No invoices yet.",
+    "noPayments": "No payments recorded yet.",
+    "monthlyFee": "Monthly fee (CAD)",
+    "outstandingBalance": "Outstanding balance"
   }
 }

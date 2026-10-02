@@ -1,9 +1,9 @@
-// MSA Platform — Phase 1 schema.
-// Only the entities needed for Phase 1 (auth/RBAC, students, daily tasks,
-// QR attendance, parent dashboard, Today's Journey, public registration).
-// Finance, Staff, Analytics, Tickets, Messaging, Badges, Notifications and
-// Scheduling are Phase 2/3 and are intentionally left out for now — add
-// them as new models rather than overloading these.
+// MSA Platform schema. Phase 1 (auth/RBAC, students, daily tasks, QR
+// attendance, parent dashboard, Today's Journey, public registration) +
+// the Finance slice of Phase 2 (invoices, payments, account-status
+// automation). Staff, Analytics, Tickets/Messaging, Badges, Notifications
+// and Scheduling are still ahead — add them as new models rather than
+// overloading these.
 //
 // `programType` on Student/Teacher/Subject exists so the future ASA
 // (sports) system can reuse this schema: Student -> Player, Teacher ->
@@ -57,6 +57,19 @@ enum RegistrationStatus {
   REJECTED
 }
 
+enum PaymentMethod {
+  CASH
+  E_TRANSFER
+  CARD
+  OTHER
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIAL
+  PAID
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -71,6 +84,7 @@ model User {
   parentProfile  ParentGuardian?
   studentAccount Student? @relation("StudentUser")
   auditLogs      AuditLog[]
+  paymentsRecorded Payment[] @relation("PaymentRecordedBy")
 
   @@map("users")
 }
@@ -115,6 +129,7 @@ model Student {
   address          String?
   registrationDate DateTime      @default(now())
   accountStatus    AccountStatus @default(ACTIVE)
+  monthlyFeeCents  Int?
   programType      ProgramType   @default(EDUCATION)
   qrToken          String        @unique @default(cuid())
 
@@ -125,6 +140,8 @@ model Student {
   subjects           Subject[]           @relation("StudentSubjects")
   tasks              Task[]
   attendanceRecords  AttendanceRecord[]  @relation("StudentAttendance")
+  invoices           Invoice[]
+  payments           Payment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -226,6 +243,51 @@ model RegistrationRequest {
   decidedAt         DateTime?
 
   @@map("registration_requests")
+}
+
+// One billing period's charge for a student (e.g. "October 2026
+// tuition"). `status` is derived from payments applied against it —
+// recalculated in lib/finance.ts, never hand-set — and rolls up into
+// the student's AccountStatus the same way.
+model Invoice {
+  id          String        @id @default(cuid())
+  studentId   String
+  student     Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  periodLabel String
+  amountCents Int
+  dueDate     DateTime
+  status      InvoiceStatus @default(UNPAID)
+
+  payments  Payment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studentId, dueDate])
+  @@map("invoices")
+}
+
+// A recorded payment (manual entry only for Phase 2 — see brief:
+// "record manual payments; add a payment-gateway interface for later").
+// `invoiceId` is nullable so a payment can be recorded before an
+// invoice exists for it (applied loosely) or as a general credit.
+model Payment {
+  id          String        @id @default(cuid())
+  studentId   String
+  student     Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  invoiceId   String?
+  invoice     Invoice?      @relation(fields: [invoiceId], references: [id])
+  amountCents Int
+  method      PaymentMethod
+  note        String?
+  paidAt      DateTime      @default(now())
+
+  recordedById String
+  recordedBy   User   @relation("PaymentRecordedBy", fields: [recordedById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([studentId, paidAt])
+  @@map("payments")
 }
 
 // Append-only. Every sensitive action (login, registration decisions,
