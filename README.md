@@ -3,10 +3,10 @@
 Auth + RBAC, student profiles, the daily task workflow, QR attendance,
 the parent dashboard, Today's Journey, public site + online registration
 (**Phase 1**) — plus, from **Phase 2**: payments/invoicing/receipts with
-account-status automation (**Finance**), and grade tracking with trend
-analytics and decline alerts (**Academics**). Staff,
-Communication/Tickets, Badges, the full Notification Center, Monthly PDF
-reports, and Scheduling are still ahead.
+account-status automation (**Finance**), grade tracking with trend
+analytics and decline alerts (**Academics**), and downloadable monthly
+PDF reports. Staff, Communication/Tickets, Badges, the full Notification
+Center, and Scheduling are still ahead.
 
 ## Stack
 
@@ -96,6 +96,30 @@ pre-created) — open **Academics** to see both.
   restriction for Overdue accounts (the brief's "restrict non-essential
   features" is a policy layer on top of this, not yet applied anywhere).
 
+## Monthly reports
+
+Open a student's **Academics** page → *Monthly reports* → download any of
+the last 6 months as a PDF (Owner/Manager any student; Parent their own
+child; Teacher their own students; Student themself). Generated on demand
+from live data — nothing is stored — via `GET /api/reports/[studentId]/[month]`.
+
+- Attendance % = days the student attended ÷ "center days" (days on which
+  *any* student checked in). There's no class-schedule model yet, so this
+  is the honest proxy for "days they could have attended".
+- Subject averages come from that month's assessments, with a delta vs.
+  the previous month when both have grades in that subject.
+- The *Teacher assessment* (strengths / areas to improve /
+  recommendations) is written by Owner/Manager/Teacher on the same page
+  (`MonthlyReportNote`). Until someone writes it, the PDF fills strengths
+  and weak topics from the month's grades and says it's auto-generated.
+- **Arabic in PDFs**: pdf-lib's built-in fonts can't encode Arabic (a
+  student named "يوسف" used to crash receipt downloads). PDFs now embed
+  Noto Sans Arabic (`assets/fonts`, SIL OFL) via fontkit. Names and
+  teacher notes render correctly; the PDF *labels* are English-only, and
+  a sentence mixing Arabic and Latin words isn't bidi-reordered.
+  `next.config.mjs` lists the font under `outputFileTracingIncludes` so it
+  ships with the serverless bundle.
+
 ## Known limitation in *this* sandbox
 
 `prisma generate` downloads its query-engine binary from
@@ -147,6 +171,6 @@ dictionaries/{ar,en}.json      all user-facing copy — nothing hardcoded in com
 
 ## Next up
 
-Monthly PDF reports and tickets/messaging round out Phase 2 (owner
-dashboard and grades/alerts are now in place); see the Phase 0 blueprint
+Tickets/messaging round out Phase 2 (owner dashboard, grades/alerts and
+monthly reports are now in place); see the Phase 0 blueprint
 for the routes and permission matrix these slot into.

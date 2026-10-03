@@ -91,6 +91,7 @@ model User {
   auditLogs      AuditLog[]
   paymentsRecorded Payment[] @relation("PaymentRecordedBy")
   assessmentsRecorded Assessment[] @relation("AssessmentRecordedBy")
+  reportNotesAuthored MonthlyReportNote[] @relation("ReportNoteAuthor")
 
   @@map("users")
 }
@@ -150,6 +151,7 @@ model Student {
   payments           Payment[]
   assessments        Assessment[]
   academicAlerts     AcademicAlert[]
+  reportNotes        MonthlyReportNote[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -342,6 +344,26 @@ model AcademicAlert {
 
   @@index([studentId, status])
   @@map("academic_alerts")
+}
+
+// The teacher-written part of a student's monthly report (section 4.15:
+// strengths / areas to improve / recommendations). One per student per
+// month; everything else in the report is computed from live data when
+// the PDF is generated. `month` is "YYYY-MM".
+model MonthlyReportNote {
+  id              String   @id @default(cuid())
+  studentId       String
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  month           String
+  strengths       String   @default("")
+  areasToImprove  String   @default("")
+  recommendations String   @default("")
+  authoredById    String
+  authoredBy      User     @relation("ReportNoteAuthor", fields: [authoredById], references: [id])
+  updatedAt       DateTime @updatedAt
+
+  @@unique([studentId, month])
+  @@map("monthly_report_notes")
 }
 
 // Append-only. Every sensitive action (login, registration decisions,

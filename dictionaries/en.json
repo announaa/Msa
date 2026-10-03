@@ -147,6 +147,15 @@
     "after": "Current",
     "noAssessments": "No assessments recorded yet.",
     "alertBanner": "Academic alert — grades declining in {subject}",
-    "resolve": "Resolve"
+    "resolve": "Resolve",
+    "monthlyReports": "Monthly reports",
+    "downloadReport": "Download PDF",
+    "reportNoteTitle": "Teacher assessment for the monthly report",
+    "month": "Month",
+    "strengths": "Strengths",
+    "areasToImprove": "Areas to improve",
+    "recommendations": "Recommendations",
+    "saveNote": "Save assessment",
+    "noteSaved": "Saved"
   }
 }

@@ -6,6 +6,8 @@ import { getSubjectSummaries, getBeforeAfter } from "@/lib/analytics";
 import { canRecordAssessment, canResolveAlerts } from "@/lib/rbac";
 import { AssessmentForm } from "@/components/AssessmentForm";
 import { AlertBanner } from "@/components/AlertBanner";
+import { ReportNoteForm } from "@/components/ReportNoteForm";
+import { recentMonths } from "@/lib/monthly-report";
 
 async function canViewAcademics(role: string, userId: string, studentId: string) {
   if (role === "OWNER" || role === "MANAGER") return true;
@@ -54,6 +56,26 @@ export default async function StudentAcademicsPage({
             .findMany({ where: { teachers: { some: { userId: session.userId } } }, select: { id: true, name: true } })
         : await db.subject.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } });
   }
+
+  const months = recentMonths(6).map((value) => {
+    const [y, m] = value.split("-").map(Number);
+    return {
+      value,
+      label: new Date(y, m - 1, 1).toLocaleDateString(params.locale, { month: "long", year: "numeric" }),
+    };
+  });
+
+  const noteRows = canRecord
+    ? await db.monthlyReportNote.findMany({
+        where: { studentId: student.id, month: { in: months.map((m) => m.value) } },
+      })
+    : [];
+  const notes = Object.fromEntries(
+    noteRows.map((n) => [
+      n.month,
+      { strengths: n.strengths, areasToImprove: n.areasToImprove, recommendations: n.recommendations },
+    ])
+  );
 
   return (
     <div className="space-y-6">
@@ -128,6 +150,25 @@ export default async function StudentAcademicsPage({
         ))}
         {summaries.length === 0 && <p className="text-sm text-slate-500">{dict.academics.noAssessments}</p>}
       </div>
+
+      <section className="overflow-hidden rounded-xl border bg-white shadow-sm">
+        <h2 className="border-b p-4 font-semibold">{dict.academics.monthlyReports}</h2>
+        <ul className="divide-y">
+          {months.map((m) => (
+            <li key={m.value} className="flex items-center justify-between p-4 text-sm">
+              <span>{m.label}</span>
+              <a
+                href={`/api/reports/${student.id}/${m.value}`}
+                className="rounded-lg border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              >
+                {dict.academics.downloadReport}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {canRecord && <ReportNoteForm studentId={student.id} months={months} notes={notes} dict={dict} />}
     </div>
   );
 }

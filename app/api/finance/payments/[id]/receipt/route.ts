@@ -4,6 +4,13 @@ import { getSession } from "@/lib/auth";
 import { formatCents } from "@/lib/finance";
 import { generateReceiptPdf } from "@/lib/receipt";
 
+const METHOD_LABELS: Record<string, string> = {
+  CASH: "Cash",
+  E_TRANSFER: "e-Transfer",
+  CARD: "Card",
+  OTHER: "Other",
+};
+
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -29,7 +36,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     studentName: payment.student.fullName,
     msaId: payment.student.msaId,
     amountLabel: formatCents(payment.amountCents),
-    method: payment.method,
+    method: METHOD_LABELS[payment.method] ?? payment.method,
     paidAt: payment.paidAt,
     note: payment.note,
     invoiceLabel: payment.invoice?.periodLabel ?? null,

@@ -25,7 +25,7 @@ export async function getSubjectSummaries(studentId: string): Promise<SubjectSum
 
   const bySubject = new Map<string, { name: string; rows: typeof assessments }>();
   for (const a of assessments) {
-    const entry = bySubject.get(a.subjectId) ?? { name: a.subject.name, rows: [] };
+    const entry: { name: string; rows: typeof assessments } = bySubject.get(a.subjectId) ?? { name: a.subject.name, rows: [] };
     entry.rows.push(a);
     bySubject.set(a.subjectId, entry);
   }

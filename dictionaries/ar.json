@@ -147,6 +147,15 @@
     "after": "حاليًا",
     "noAssessments": "لم تُسجَّل أي تقييمات بعد.",
     "alertBanner": "تنبيه أكاديمي — تراجع في مادة {subject}",
-    "resolve": "إغلاق التنبيه"
+    "resolve": "إغلاق التنبيه",
+    "monthlyReports": "التقارير الشهرية",
+    "downloadReport": "تحميل PDF",
+    "reportNoteTitle": "تقييم المعلم للتقرير الشهري",
+    "month": "الشهر",
+    "strengths": "نقاط القوة",
+    "areasToImprove": "مجالات التحسين",
+    "recommendations": "التوصيات",
+    "saveNote": "حفظ التقييم",
+    "noteSaved": "تم الحفظ"
   }
 }

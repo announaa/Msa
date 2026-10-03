@@ -230,6 +230,16 @@ async function main() {
       data: { studentId: student2.id, subjectId: english.id, recordedById: teacherUser2.id, ...a },
     });
   }
+  await db.monthlyReportNote.create({
+    data: {
+      studentId: student1.id,
+      month: "2026-09",
+      strengths: "Fractions and geometry — steady improvement across the term.",
+      areasToImprove: "Algebraic equations; showing full working in written answers.",
+      recommendations: "20 minutes of algebra practice daily; review mistakes with the teacher weekly.",
+      authoredById: teacherUser1.id,
+    },
+  });
   await db.academicAlert.create({
     data: {
       studentId: student2.id,
