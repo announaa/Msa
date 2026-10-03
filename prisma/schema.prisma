@@ -1,9 +1,9 @@
 // MSA Platform schema. Phase 1 (auth/RBAC, students, daily tasks, QR
 // attendance, parent dashboard, Today's Journey, public registration) +
-// the Finance slice of Phase 2 (invoices, payments, account-status
-// automation). Staff, Analytics, Tickets/Messaging, Badges, Notifications
-// and Scheduling are still ahead — add them as new models rather than
-// overloading these.
+// Phase 2's Finance (invoices, payments, account-status automation) and
+// Grades & Academic Analytics (assessments, trends, decline alerts).
+// Staff, Tickets/Messaging, Badges, Notifications and Scheduling are
+// still ahead — add them as new models rather than overloading these.
 //
 // `programType` on Student/Teacher/Subject exists so the future ASA
 // (sports) system can reuse this schema: Student -> Player, Teacher ->
@@ -64,6 +64,11 @@ enum PaymentMethod {
   OTHER
 }
 
+enum AlertStatus {
+  OPEN
+  RESOLVED
+}
+
 enum InvoiceStatus {
   UNPAID
   PARTIAL
@@ -85,6 +90,7 @@ model User {
   studentAccount Student? @relation("StudentUser")
   auditLogs      AuditLog[]
   paymentsRecorded Payment[] @relation("PaymentRecordedBy")
+  assessmentsRecorded Assessment[] @relation("AssessmentRecordedBy")
 
   @@map("users")
 }
@@ -142,6 +148,8 @@ model Student {
   attendanceRecords  AttendanceRecord[]  @relation("StudentAttendance")
   invoices           Invoice[]
   payments           Payment[]
+  assessments        Assessment[]
+  academicAlerts     AcademicAlert[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -157,6 +165,8 @@ model Subject {
   teachers Teacher[] @relation("TeacherSubjects")
   students Student[] @relation("StudentSubjects")
   tasks    Task[]
+  assessments    Assessment[]
+  academicAlerts AcademicAlert[]
 
   @@map("subjects")
 }
@@ -288,6 +298,50 @@ model Payment {
 
   @@index([studentId, paidAt])
   @@map("payments")
+}
+
+// Exam -> Subject -> Topic -> Grade, per section 4.4. `topic` is a plain
+// string (e.g. "Algebra — Equations") rather than its own hierarchical
+// model — enough to pinpoint where a student needs help without building
+// a full curriculum tree for an MVP.
+model Assessment {
+  id           String   @id @default(cuid())
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId    String
+  subject      Subject  @relation(fields: [subjectId], references: [id])
+  topic        String
+  examLabel    String
+  scorePercent Int
+  gradedAt     DateTime @default(now())
+
+  recordedById String
+  recordedBy   User     @relation("AssessmentRecordedBy", fields: [recordedById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([studentId, subjectId, gradedAt])
+  @@map("assessments")
+}
+
+// Auto-created (never by hand) when a student's last 3 assessments in a
+// subject strictly decline — see lib/analytics.ts's
+// checkAcademicDecline, called after every assessment write. Surfaces on
+// the Owner dashboard's alert count and as a banner on the student's
+// academics page until a Manager/Owner resolves it.
+model AcademicAlert {
+  id         String      @id @default(cuid())
+  studentId  String
+  student    Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId  String
+  subject    Subject     @relation(fields: [subjectId], references: [id])
+  message    String
+  status     AlertStatus @default(OPEN)
+  createdAt  DateTime    @default(now())
+  resolvedAt DateTime?
+
+  @@index([studentId, status])
+  @@map("academic_alerts")
 }
 
 // Append-only. Every sensitive action (login, registration decisions,

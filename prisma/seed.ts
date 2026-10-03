@@ -204,6 +204,40 @@ async function main() {
   await db.student.update({ where: { id: student1.id }, data: { accountStatus: "ACTIVE" } });
   await db.student.update({ where: { id: student2.id }, data: { accountStatus: "OVERDUE" } });
 
+  // Academics demo data: student1 improving in Math (before-vs-after +
+  // trend arrows show up), student2 declining 3-in-a-row in English
+  // (triggers an open AcademicAlert automatically, same as the real
+  // /api/assessments route would do).
+  const mathScores = [
+    { topic: "Fractions", examLabel: "Quiz 1", scorePercent: 58, gradedAt: new Date("2026-06-10") },
+    { topic: "Algebra — Equations", examLabel: "Midterm 1", scorePercent: 65, gradedAt: new Date("2026-07-15") },
+    { topic: "Algebra — Equations", examLabel: "Quiz 2", scorePercent: 71, gradedAt: new Date("2026-08-20") },
+    { topic: "Geometry", examLabel: "Midterm 2", scorePercent: 77, gradedAt: new Date("2026-09-25") },
+  ];
+  for (const a of mathScores) {
+    await db.assessment.create({
+      data: { studentId: student1.id, subjectId: math.id, recordedById: teacherUser1.id, ...a },
+    });
+  }
+
+  const englishScores = [
+    { topic: "Vocabulary", examLabel: "Quiz 1", scorePercent: 80, gradedAt: new Date("2026-07-05") },
+    { topic: "Grammar", examLabel: "Quiz 2", scorePercent: 68, gradedAt: new Date("2026-08-05") },
+    { topic: "Essay Writing", examLabel: "Midterm", scorePercent: 55, gradedAt: new Date("2026-09-05") },
+  ];
+  for (const a of englishScores) {
+    await db.assessment.create({
+      data: { studentId: student2.id, subjectId: english.id, recordedById: teacherUser2.id, ...a },
+    });
+  }
+  await db.academicAlert.create({
+    data: {
+      studentId: student2.id,
+      subjectId: english.id,
+      message: "English: declined 3 assessments in a row (80% \u2192 68% \u2192 55%)",
+    },
+  });
+
   await db.announcement.create({
     data: {
       title: "Fall term registration is open",

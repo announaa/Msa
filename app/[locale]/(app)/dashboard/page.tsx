@@ -2,6 +2,7 @@ import { getSession } from "@/lib/auth";
 import { getDictionary, format, type Locale } from "@/lib/dictionaries";
 import { db } from "@/lib/db";
 import { formatCents } from "@/lib/finance";
+import { getSubjectSummaries } from "@/lib/analytics";
 
 function startOfToday() {
   const d = new Date();
@@ -24,16 +25,25 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
   const today = startOfToday();
 
   if (session.role === "OWNER" || session.role === "MANAGER") {
-    const [totalStudents, presentToday, tasksToday, completedToday, pendingRegistrations, overdueAccounts, unpaidInvoices] =
-      await Promise.all([
-        db.student.count(),
-        db.attendanceRecord.count({ where: { studentId: { not: null }, checkOutAt: null } }),
-        db.task.count({ where: { assignedDate: { gte: today } } }),
-        db.task.count({ where: { assignedDate: { gte: today }, status: "COMPLETED" } }),
-        db.registrationRequest.count({ where: { status: "PENDING" } }),
-        db.student.count({ where: { accountStatus: "OVERDUE" } }),
-        db.invoice.findMany({ where: { status: { not: "PAID" } }, include: { payments: true } }),
-      ]);
+    const [
+      totalStudents,
+      presentToday,
+      tasksToday,
+      completedToday,
+      pendingRegistrations,
+      overdueAccounts,
+      unpaidInvoices,
+      openAcademicAlerts,
+    ] = await Promise.all([
+      db.student.count(),
+      db.attendanceRecord.count({ where: { studentId: { not: null }, checkOutAt: null } }),
+      db.task.count({ where: { assignedDate: { gte: today } } }),
+      db.task.count({ where: { assignedDate: { gte: today }, status: "COMPLETED" } }),
+      db.registrationRequest.count({ where: { status: "PENDING" } }),
+      db.student.count({ where: { accountStatus: "OVERDUE" } }),
+      db.invoice.findMany({ where: { status: { not: "PAID" } }, include: { payments: true } }),
+      db.academicAlert.count({ where: { status: "OPEN" } }),
+    ]);
 
     const outstandingCents = unpaidInvoices.reduce((sum, inv) => {
       const paid = inv.payments.reduce((p, x) => p + x.amountCents, 0);
@@ -50,6 +60,7 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
           <StatCard label={dict.dashboard.pendingRegistrations} value={pendingRegistrations} />
           <StatCard label={dict.dashboard.outstandingTotal} value={formatCents(outstandingCents, params.locale)} />
           <StatCard label={dict.dashboard.overdueAccounts} value={overdueAccounts} />
+          <StatCard label={dict.dashboard.declineAlerts} value={openAcademicAlerts} />
         </div>
       </div>
     );
@@ -74,7 +85,8 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">{format(dict.dashboard.greetingParent, { name: session.fullName })}</h1>
-        {students.map((student) => {
+        {await Promise.all(
+          students.map(async (student) => {
           const openRecord = student.attendanceRecords[0];
           const atCenter = !!openRecord && !openRecord.checkOutAt;
           const completed = student.tasks.filter((t) => t.status === "COMPLETED").length;
@@ -83,6 +95,11 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
             const paid = inv.payments.reduce((p, x) => p + x.amountCents, 0);
             return sum + Math.max(0, inv.amountCents - paid);
           }, 0);
+          const subjectSummaries = await getSubjectSummaries(student.id);
+          const academicAverage =
+            subjectSummaries.length > 0
+              ? Math.round(subjectSummaries.reduce((sum, s) => sum + s.average, 0) / subjectSummaries.length)
+              : null;
 
           return (
             <div key={student.id} className="rounded-xl border bg-white p-5 shadow-sm">
@@ -94,6 +111,9 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
               </div>
               <div className="mt-3 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
                 <StatCard label={dict.dashboard.todaysTasks} value={`${completed}/${student.tasks.length}`} />
+                {academicAverage != null && (
+                  <StatCard label={dict.dashboard.academicAverage} value={`${academicAverage}%`} />
+                )}
               </div>
               {latestNote && (
                 <p className="mt-3 text-sm text-slate-600">
@@ -113,7 +133,8 @@ export default async function DashboardPage({ params }: { params: { locale: Loca
               )}
             </div>
           );
-        })}
+          })
+        )}
         {students.length === 0 && <p className="text-sm text-slate-500">—</p>}
       </div>
     );

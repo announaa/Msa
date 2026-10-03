@@ -57,16 +57,24 @@ export default async function StudentProfilePage({
           <p className="mt-2 inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium">
             {dict.finance.accountStatus[student.accountStatus]}
           </p>
-          {canAccessModule(session.role, "finance") && (
-            <p className="mt-2">
+          <p className="mt-2 flex gap-4">
+            {canAccessModule(session.role, "finance") && (
               <Link
                 href={`/${params.locale}/finance/${student.id}`}
                 className="text-sm font-medium text-brand-600 hover:underline"
               >
                 {dict.finance.title} →
               </Link>
-            </p>
-          )}
+            )}
+            {canAccessModule(session.role, "academics") && (
+              <Link
+                href={`/${params.locale}/academics/${student.id}`}
+                className="text-sm font-medium text-brand-600 hover:underline"
+              >
+                {dict.academics.title} →
+              </Link>
+            )}
+          </p>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={qrDataUrl} alt="Student QR code" className="h-32 w-32" />

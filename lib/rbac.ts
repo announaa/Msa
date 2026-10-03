@@ -14,6 +14,7 @@ export const MODULE_ACCESS = {
   journey: ["OWNER", "MANAGER", "TEACHER", "PARENT", "STUDENT"],
   registrations: ["OWNER", "MANAGER"],
   finance: ["OWNER", "MANAGER", "PARENT"],
+  academics: ["OWNER", "MANAGER", "TEACHER", "PARENT", "STUDENT"],
 } satisfies Record<string, Role[]>;
 
 export type ModuleKey = keyof typeof MODULE_ACCESS;
@@ -40,5 +41,15 @@ export function canOperateKiosk(role: Role): boolean {
 // Recording invoices/payments — Parent has read-only access to `finance`
 // (their own student's records) via MODULE_ACCESS above, but never this.
 export function canManageFinance(role: Role): boolean {
+  return role === "OWNER" || role === "MANAGER";
+}
+
+// Teacher can only record for their own students (checked in the route,
+// same ownership pattern as task status edits).
+export function canRecordAssessment(role: Role): boolean {
+  return role === "OWNER" || role === "MANAGER" || role === "TEACHER";
+}
+
+export function canResolveAlerts(role: Role): boolean {
   return role === "OWNER" || role === "MANAGER";
 }

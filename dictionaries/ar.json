@@ -19,7 +19,8 @@
     "attendance": "الحضور",
     "scan": "مسح (جهاز الاستقبال)",
     "registrations": "طلبات التسجيل",
-    "finance": "الشؤون المالية"
+    "finance": "الشؤون المالية",
+    "academics": "الأكاديمية"
   },
   "landing": {
     "heroTitle": "اجعل الدراسة رائعة",
@@ -58,7 +59,9 @@
     "tasksAssignedVsCompleted": "المهام الموكلة / المنجزة",
     "pendingRegistrations": "طلبات تسجيل قيد الانتظار",
     "outstandingTotal": "الرصيد المستحق (جميع الطلاب)",
-    "overdueAccounts": "حسابات متأخرة السداد"
+    "overdueAccounts": "حسابات متأخرة السداد",
+    "academicAverage": "المعدل الأكاديمي",
+    "declineAlerts": "تنبيهات تراجع العلامات"
   },
   "tasks": {
     "title": "مهام اليوم",
@@ -129,5 +132,21 @@
     "noPayments": "لم تُسجَّل أي دفعات بعد.",
     "monthlyFee": "الرسوم الشهرية (دولار كندي)",
     "outstandingBalance": "الرصيد المستحق"
+  },
+  "academics": {
+    "title": "الأكاديمية",
+    "recordAssessment": "تسجيل تقييم",
+    "subject": "المادة",
+    "topic": "الموضوع (مثال: الجبر — المعادلات)",
+    "examLabel": "الاختبار (مثال: الامتحان الأول)",
+    "score": "العلامة (%)",
+    "strongestTopics": "نقاط القوة",
+    "needsSupport": "يحتاج دعمًا",
+    "beforeAfterTitle": "قبل وبعد الانضمام إلى إم إس إيه",
+    "before": "قبل الانضمام",
+    "after": "حاليًا",
+    "noAssessments": "لم تُسجَّل أي تقييمات بعد.",
+    "alertBanner": "تنبيه أكاديمي — تراجع في مادة {subject}",
+    "resolve": "إغلاق التنبيه"
   }
 }

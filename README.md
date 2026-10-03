@@ -2,10 +2,11 @@
 
 Auth + RBAC, student profiles, the daily task workflow, QR attendance,
 the parent dashboard, Today's Journey, public site + online registration
-(**Phase 1**) — plus payments, invoicing, receipts, and account-status
-automation (**Finance**, the first slice of **Phase 2**). Staff,
-Analytics, Communication/Tickets, Badges, the full Notification Center,
-and Scheduling are still ahead.
+(**Phase 1**) — plus, from **Phase 2**: payments/invoicing/receipts with
+account-status automation (**Finance**), and grade tracking with trend
+analytics and decline alerts (**Academics**). Staff,
+Communication/Tickets, Badges, the full Notification Center, Monthly PDF
+reports, and Scheduling are still ahead.
 
 ## Stack
 
@@ -43,6 +44,31 @@ Demo accounts (seeded, all use password `password123`):
 The seed gives student1 a paid-up September invoice (account: Active)
 and student2 an unpaid, past-due one (account: Overdue) — open
 **Finance** as the Owner or Manager demo account to see both states.
+It also gives student1 four improving Math assessments and student2
+three declining English ones (with the resulting open AcademicAlert
+pre-created) — open **Academics** to see both.
+
+## What's in Academics
+
+- **Assessment**: Exam → Subject → Topic → Score, recorded by
+  Owner/Manager (any student) or Teacher (their own students only).
+  `topic` is a plain string rather than a modeled hierarchy — enough to
+  say *where* a student needs help without a full curriculum tree.
+- `lib/analytics.ts`: per-subject average + trend (latest vs. previous
+  assessment) + a Strongest/Needs-Support topic breakdown, and a
+  "before vs after MSA" comparison (each subject's first assessment vs.
+  the average of its most recent 3 — a simplification; there's no
+  separate "baseline" field).
+- **Smart alert**: `checkAcademicDecline` runs after every assessment
+  write; if a student's last 3 assessments in a subject strictly
+  declined, it opens an `AcademicAlert` (one at a time per
+  student+subject, so it doesn't spam). Shown as a banner on the
+  student's Academics page and rolled into the Owner dashboard's
+  "Declining-grades alerts" count. Owner/Manager can resolve it.
+- Not built yet: the other two Owner-dashboard alert types from section
+  4.9 (students absent 3+ times, unresolved parent complaints) — the
+  first needs an absence-vs-schedule concept we don't have yet, the
+  second needs the Tickets module.
 
 ## What's in Finance
 
@@ -110,10 +136,10 @@ up, since every field/relation/enum used was written directly against
 
 ```
 app/[locale]/                  public site + authenticated app (locale-prefixed)
-app/[locale]/(app)/            protected route group — dashboard, students, tasks, attendance, journey, registrations, finance
-app/api/                       route handlers (auth, register, tasks, attendance scan, registrations, finance)
-components/                    client components (forms, kiosk input, task/payment rows, nav)
-lib/                           db client, auth/session, rbac table, audit log, mailer, finance, receipt, i18n
+app/[locale]/(app)/            protected route group — dashboard, students, tasks, attendance, journey, registrations, finance, academics
+app/api/                       route handlers (auth, register, tasks, attendance scan, registrations, finance, assessments, academic-alerts)
+components/                    client components (forms, kiosk input, task/payment rows, assessment form, alert banner, nav)
+lib/                           db client, auth/session, rbac table, audit log, mailer, finance, receipt, analytics, i18n
 prisma/schema.prisma           data model
 prisma/seed.ts                 demo data (incl. sample invoices/payments)
 dictionaries/{ar,en}.json      all user-facing copy — nothing hardcoded in components
@@ -121,6 +147,6 @@ dictionaries/{ar,en}.json      all user-facing copy — nothing hardcoded in com
 
 ## Next up
 
-Grades analytics, smart alerts, monthly PDF reports, and tickets/
-messaging round out Phase 2; see the Phase 0 blueprint for the routes
-and permission matrix these slot into.
+Monthly PDF reports and tickets/messaging round out Phase 2 (owner
+dashboard and grades/alerts are now in place); see the Phase 0 blueprint
+for the routes and permission matrix these slot into.

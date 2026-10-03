@@ -12,6 +12,7 @@ const LINKS: { key: ModuleKey; href: string; labelKey: keyof Dictionary["nav"] }
   { key: "attendance-scan", href: "attendance/scan", labelKey: "scan" },
   { key: "registrations", href: "registrations", labelKey: "registrations" },
   { key: "finance", href: "finance", labelKey: "finance" },
+  { key: "academics", href: "academics", labelKey: "academics" },
 ];
 
 export function Nav({ locale, role, dict }: { locale: Locale; role: Role; dict: Dictionary }) {

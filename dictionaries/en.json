@@ -19,7 +19,8 @@
     "attendance": "Attendance",
     "scan": "Scan (Kiosk)",
     "registrations": "Registration Requests",
-    "finance": "Finance"
+    "finance": "Finance",
+    "academics": "Academics"
   },
   "landing": {
     "heroTitle": "Make Studying Amazing",
@@ -58,7 +59,9 @@
     "tasksAssignedVsCompleted": "Tasks assigned / completed",
     "pendingRegistrations": "Pending registration requests",
     "outstandingTotal": "Outstanding balance (all students)",
-    "overdueAccounts": "Overdue accounts"
+    "overdueAccounts": "Overdue accounts",
+    "academicAverage": "Academic average",
+    "declineAlerts": "Declining-grades alerts"
   },
   "tasks": {
     "title": "Today's Tasks",
@@ -129,5 +132,21 @@
     "noPayments": "No payments recorded yet.",
     "monthlyFee": "Monthly fee (CAD)",
     "outstandingBalance": "Outstanding balance"
+  },
+  "academics": {
+    "title": "Academics",
+    "recordAssessment": "Record assessment",
+    "subject": "Subject",
+    "topic": "Topic (e.g. Algebra — Equations)",
+    "examLabel": "Exam (e.g. Midterm 1)",
+    "score": "Score (%)",
+    "strongestTopics": "Strongest Topics",
+    "needsSupport": "Needs Support",
+    "beforeAfterTitle": "Before vs after MSA",
+    "before": "Before joining",
+    "after": "Current",
+    "noAssessments": "No assessments recorded yet.",
+    "alertBanner": "Academic alert — grades declining in {subject}",
+    "resolve": "Resolve"
   }
 }
